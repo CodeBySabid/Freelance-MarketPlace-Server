@@ -32,6 +32,13 @@ async function run() {
     app.post('/accepted', async (req, res) => {
       try {
         const job = req.body;
+        const exists = await acceptedJobsCollection.findOne({
+          jobId: job.jobId,
+          acceptedBy: job.acceptedBy
+        });
+        if (exists) {
+          return res.status(400).send({ message: "You already accepted this job!" });
+        }
         const result = await acceptedJobsCollection.insertOne(job);
         res.send(result);
       }
