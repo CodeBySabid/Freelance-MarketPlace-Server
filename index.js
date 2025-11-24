@@ -57,6 +57,18 @@ async function run() {
       }
     });
 
+    app.get('/my-jobs', async (req, res) => {
+      try{
+        const email = req.query.email;
+        if(!email) return res.status(400).send({ message: 'Email is required' })
+        const result = await modelCollection.find({ userEmail: email }).toArray();
+      res.send(result);
+      }
+      catch(error) {
+        res.status(500).send({ message: "Error fetching jobs", error })
+      }
+    })
+
 
     app.get('/users', async (req, res) => {
       const result = await modelCollection.find().toArray();
