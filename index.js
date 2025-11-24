@@ -28,6 +28,7 @@ async function run() {
     const db = client.db('marketplace');
     const modelCollection = db.collection('users');
     const acceptedJobsCollection = db.collection('acceptedJobs')
+    const { ObjectId } = require("mongodb");
 
     app.post('/accepted', async (req, res) => {
       try {
@@ -58,16 +59,28 @@ async function run() {
     });
 
     app.get('/my-jobs', async (req, res) => {
-      try{
+      try {
         const email = req.query.email;
-        if(!email) return res.status(400).send({ message: 'Email is required' })
+        if (!email) return res.status(400).send({ message: 'Email is required' })
         const result = await modelCollection.find({ userEmail: email }).toArray();
-      res.send(result);
+        res.send(result);
       }
-      catch(error) {
+      catch (error) {
         res.status(500).send({ message: "Error fetching jobs", error })
       }
     })
+
+
+    app.delete('/job/:id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const result = await modelCollection.deleteOne({ _id: new ObjectId(id) });
+
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to delete job", error });
+      }
+    });
 
 
     app.get('/users', async (req, res) => {
