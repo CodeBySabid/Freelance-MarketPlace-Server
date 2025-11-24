@@ -5,8 +5,6 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
 
-
-
 const uri = process.env.URI;
 
 app.use(cors())
@@ -29,9 +27,21 @@ async function run() {
 
     const db = client.db('marketplace');
     const modelCollection = db.collection('users');
+    const acceptedJobsCollection = db.collection('acceptedJobs')
+
+    app.post('/accepted', async (req, res) => {
+      try {
+        const job = req.body;
+        const result = await acceptedJobsCollection.insertOne(job);
+        res.send(result);
+      }
+      catch (error) {
+        res.status(500).send({ message: "Error saving job", error })
+      }
+    })
 
 
-    app.get('/users', async(req, res) => {
+    app.get('/users', async (req, res) => {
       const result = await modelCollection.find().toArray();
       res.send(result)
     })
@@ -48,7 +58,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Server is running')
+  res.send('Server is running')
 })
 
 app.listen(port, () => {
