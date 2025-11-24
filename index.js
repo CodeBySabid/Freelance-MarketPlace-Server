@@ -47,6 +47,16 @@ async function run() {
       }
     })
 
+    app.post('/users', async (req, res) => {
+      try {
+        const newJob = req.body;
+        const result = await modelCollection.insertOne(newJob);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Error adding job", error });
+      }
+    });
+
 
     app.get('/users', async (req, res) => {
       const result = await modelCollection.find().toArray();
