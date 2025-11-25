@@ -5,6 +5,17 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
 
+
+const admin = require("firebase-admin");
+
+const serviceAccount = require("./simple-firebase-auth-firebase-adminsdk-fbsvc-43ecee1980.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+
+
 const uri = process.env.URI;
 
 app.use(cors())
@@ -19,6 +30,11 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
+const middlewer = (req, res, next) => {
+  
+  next()
+}
 
 async function run() {
   try {
@@ -121,14 +137,14 @@ async function run() {
     });
 
 
-    app.get('/users', async (req, res) => {
+    app.get('/users', middlewer, async (req, res) => {
       const result = await modelCollection.find().toArray();
       res.send(result)
     })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -142,5 +158,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`)
+  // console.log(`Server is listening on port ${port}`)
 })
