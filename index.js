@@ -48,6 +48,17 @@ async function run() {
       }
     })
 
+    app.get('/my-accepted', async (req, res) => {
+      try {
+        const email = req.query.email;
+        if (!email) return res.status(400).send({ message: 'Email is required' })
+        const result = await acceptedJobsCollection.find({ acceptedBy: email }).toArray();
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Error fetching accepted jobs", error })
+      }
+    });
+
     app.post('/users', async (req, res) => {
       try {
         const newJob = req.body;
@@ -70,6 +81,33 @@ async function run() {
       }
     })
 
+    app.delete('/accepted/:id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const result = await acceptedJobsCollection.deleteOne({ _id: new ObjectId(id) });
+        if (result.deletedCount === 0) {
+          return res.status(404).send({ message: "Accepted job not found" });
+        }
+        res.send({ message: "Accepted job deleted successfully" });
+      }
+      catch (error) {
+        res.status(500).send({ message: "Failed to delete accepted job", error });
+      }
+    });
+
+    app.put('/job/:id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const updatedJob = req.body;
+        const result = await modelCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: updatedJob }
+        );
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to update job", error });
+      }
+    });
 
     app.delete('/job/:id', async (req, res) => {
       try {
