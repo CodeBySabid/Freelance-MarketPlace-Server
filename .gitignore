@@ -1,3 +1,3 @@
 node_modules
 .env
-simple-firebase-auth-firebase-adminsdk-fbsvc-43ecee1980.json
+serviceAccountKey.json
