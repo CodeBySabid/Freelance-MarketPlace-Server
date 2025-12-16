@@ -4,11 +4,13 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
-
+const decoded = Buffer.from(process.env.FB_SERVICE_KEY, 'base64').toString('utf8')
 
 const admin = require("firebase-admin");
 
-const serviceAccount = require("./simple-firebase-auth-firebase-adminsdk-fbsvc-43ecee1980.json");
+// const serviceAccount = require("./simple-firebase-auth-firebase-adminsdk-fbsvc-43ecee1980.json");
+// const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = JSON.parse(decoded);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
